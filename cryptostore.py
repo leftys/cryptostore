@@ -17,6 +17,7 @@ from cryptofeed.backends.postgres import BookPostgres, TradePostgres, TickerPost
 from cryptofeed.backends.socket import BookSocket, TradeSocket, TickerSocket, FundingSocket, CandlesSocket, OpenInterestSocket, LiquidationsSocket
 from cryptofeed.backends.influxdb import BookInflux, TradeInflux, TickerInflux, FundingInflux, CandlesInflux, OpenInterestInflux, LiquidationsInflux
 from cryptofeed.backends.quest import BookQuest, TradeQuest, TickerQuest, FundingQuest, CandlesQuest, OpenInterestQuest, LiquidationsQuest
+from cryptofeed.backends.parquet import BookParquet, TradeParquet, TickerParquet, FundingParquet, CandlesParquet, OpenInterestParquet, LiquidationsParquet
 
 
 async def tty(obj, receipt_ts):
@@ -121,13 +122,24 @@ def load_config() -> Feed:
     elif backend == 'QUEST':
         kwargs = {'host': host, 'port': port if port else 9009}
         cbs = {
-            L2_BOOK: BookQuest(**kwargs),
+            L2_BOOK: BookQuest(**kwargs, snapshot_interval=snap_interval, depth=20),
             TRADES: TradeQuest(**kwargs),
             TICKER: TickerQuest(**kwargs),
             FUNDING: FundingQuest(**kwargs),
             CANDLES: CandlesQuest(**kwargs),
             OPEN_INTEREST: OpenInterestQuest(**kwargs),
             LIQUIDATIONS: LiquidationsQuest(**kwargs)
+        }
+    elif backend == 'PARQUET':
+        kwargs = {'path': ''}
+        cbs = {
+            L2_BOOK: BookParquet(**kwargs, snapshot_interval=snap_interval, depth=20),
+            TRADES: TradeParquet(**kwargs),
+            TICKER: TickerParquet(**kwargs),
+            FUNDING: FundingParquet(**kwargs),
+            CANDLES: CandlesParquet(**kwargs),
+            OPEN_INTEREST: OpenInterestParquet(**kwargs),
+            LIQUIDATIONS: LiquidationsParquet(**kwargs)
         }
     elif backend == 'TTY':
         cbs = {
