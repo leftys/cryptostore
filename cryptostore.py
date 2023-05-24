@@ -55,13 +55,17 @@ def load_config() -> Feed:
     org = os.environ.get('ORG')
     bucket = os.environ.get('BUCKET')
     token = os.environ.get('TOKEN')
+    if bool(os.environ.get('MPID', False)):
+        trade_key = 'trades_mpid'
+    else:
+        trade_key = 'trades'
 
     cbs = None
     if backend == 'PARQUET':
         kwargs = {'path': ''}
         cbs = {
             L2_BOOK: BookParquet(**kwargs, snapshot_interval=snap_interval, max_depth=20),
-            TRADES: TradeParquet(**kwargs),
+            TRADES: TradeParquet(key = trade_key, **kwargs),
             TICKER: TickerParquet(**kwargs),
             FUNDING: FundingParquet(**kwargs),
             CANDLES: CandlesParquet(**kwargs),
