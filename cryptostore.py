@@ -10,7 +10,7 @@ from cryptofeed import FeedHandler
 from cryptofeed.exchanges import EXCHANGE_MAP
 from cryptofeed.feed import Feed
 from cryptofeed.defines import L2_BOOK, TICKER, TRADES, FUNDING, CANDLES, OPEN_INTEREST, LIQUIDATIONS
-from cryptofeed.backends.parquet import BookParquet, TradeParquet, TickerParquet, FundingParquet, CandlesParquet, OpenInterestParquet, LiquidationsParquet
+from cryptofeed.backends.parquet import BookParquet, TradeParquet, TickerParquet, FundingParquet, CandlesParquet, OpenInterestParquet, LiquidationsParquet, BookDeltaParquet
 
 
 async def tty(obj, receipt_ts):
@@ -72,6 +72,10 @@ def load_config() -> Feed:
             OPEN_INTEREST: OpenInterestParquet(**kwargs),
             LIQUIDATIONS: LiquidationsParquet(**kwargs)
         }
+        if 'book_delta' in channels:
+            cbs[L2_BOOK] = [cbs[L2_BOOK], BookDeltaParquet(**kwargs, snapshot_interval=snap_interval)]
+            channels.remove('book_delta')
+
     elif backend == 'TTY':
         cbs = {
             L2_BOOK: tty,
