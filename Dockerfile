@@ -11,7 +11,8 @@ RUN apt-get update && \
 RUN --mount=type=cache,target=/root/.cache/pip \
 	pip install --no-cache-dir -U pyarrow cython uvloop yapic.json pip
 #ADD "http://www.randomnumberapi.com/api/v1.0/random?min=100&max=1000&count=5" skipcache
-RUN  --mount=type=cache,target=/root/.cache/pip pip install --no-cache-dir git+https://github.com/leftys/cryptofeed.git@parquet-backend
+RUN date '+%s' >/build-date.txt
+RUN  --mount=type=cache,target=/root/.cache/pip pip install --no-cache-dir "git+https://github.com/leftys/cryptofeed.git@parquet-backend#egg=cryptofeed[parquet]==$(cat /build-date.txt)"
 
 FROM python:3.10-slim-bullseye as final
 
