@@ -107,3 +107,4 @@ venv.bak/
 
 # PyCharm / jetbrains
 .idea
+/kucoin_config.yaml
